@@ -282,7 +282,7 @@ class _DetailBookingAdminPageState extends State<DetailBookingAdminPage> {
         label = 'Dibatalkan';
         break;
       default:
-        color = Colors.orange;
+        color = Colors.blue;
         label = 'Paid';
     }
     return Container(
