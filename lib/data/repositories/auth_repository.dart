@@ -49,8 +49,9 @@ class AuthRepository {
     AuthRequest request,
     String nama,
     String notelp, {
-    String? photoUrl, // ← tambah ini
+    String? photoUrl, 
   }) async {
+    try {
     final response = await _supabase.auth.signUp(
       email: request.email,
       password: request.password,
@@ -62,10 +63,21 @@ class AuthRepository {
         'nama': nama,
         'notelp': notelp,
         'role': 'customer',
-        'image': photoUrl ?? '', 
+        'image': photoUrl ?? '',
       });
     }
+  } on AuthException catch (e) {
+    final msg = e.message.toLowerCase();
+
+    if (msg.contains('user already registered')) {
+      throw Exception('Email sudah terdaftar, gunakan email lain.');
+    } else {
+      throw Exception('Registrasi gagal: ${e.message}');
+    }
+  } on PostgrestException catch (_) {
+    throw Exception('Terjadi kesalahan koneksi, coba lagi.');
   }
+  } 
 
   Future<bool> isLoggedIn() async {
     final user = _supabase.auth.currentUser;
