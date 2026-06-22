@@ -1,3 +1,6 @@
+import 'package:booking_villa/logic/bloc/cart/cart_bloc.dart';
+import 'package:booking_villa/logic/bloc/cart/cart_event.dart';
+import 'package:booking_villa/logic/bloc/cart/cart_state.dart';
 import 'package:booking_villa/logic/ui/components/map_preview.dart';
 import 'package:booking_villa/logic/ui/pages/admin/manage_villa/editVilla.dart';
 import 'package:booking_villa/logic/ui/pages/customer/bookingVilla.dart';
@@ -79,6 +82,19 @@ class KatalogVillaScreen extends StatelessWidget {
                 content: Text(state.message),
                 backgroundColor: Colors.red,
               ),
+            );
+          }
+        },
+        child: BlocListener<CartBloc, CartState>(
+        listener: (context, state) {
+          if (state is CartActionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+            );
+          }
+          if (state is CartError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
             );
           }
         },
@@ -365,42 +381,71 @@ class KatalogVillaScreen extends StatelessWidget {
 
                     const SizedBox(height: 30),
 
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.navy,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.calendar_month_outlined,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        label: const Text(
-                          "Booking Sekarang",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => BookingPage(
-                                villa: villa,
-                                initialCheckIn: checkInDate,
-                                initialCheckOut: checkOutDate,
+                    Row(
+                      children: [
+                        // Tombol Simpan ke Keranjang
+                        SizedBox(
+      height: 55,
+      width: 55, // Dibuat kotak karena hanya memuat ikon
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.navy,
+          side: const BorderSide(color: AppColors.navy, width: 1.5),
+          padding: EdgeInsets.zero, // Biar ikon tepat di tengah
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+        onPressed: () {
+     
+          print("Tombol keranjang diklik untuk Villa ID: ${villa.id}");
+          context.read<CartBloc>().add(AddToCartEvent(villa.id!));
+        },
+        child: const Icon(Icons.add_shopping_cart, size: 22),
+      ),
+    ),
+                        const SizedBox(width: 10),
+
+                        Expanded(
+                          flex: 3,
+                          child: SizedBox(
+                            height: 55,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.navy,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
                               ),
+                              icon: const Icon(
+                                Icons.calendar_month_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              label: const Text(
+                                "Booking Sekarang",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BookingPage(
+                                      villa: villa,
+                                      initialCheckIn: checkInDate,
+                                      initialCheckOut: checkOutDate,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 20),
@@ -411,6 +456,7 @@ class KatalogVillaScreen extends StatelessWidget {
           ],
         ),
       ),
+      )
     );
   }
 
