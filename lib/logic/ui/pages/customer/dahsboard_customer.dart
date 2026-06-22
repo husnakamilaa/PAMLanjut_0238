@@ -14,6 +14,7 @@ import 'package:booking_villa/logic/ui/components/date_picker.dart';
 import 'package:booking_villa/logic/ui/components/promoCarousel.dart';
 import 'package:booking_villa/logic/ui/components/search_bar.dart';
 import 'package:booking_villa/logic/ui/pages/auth/login.dart';
+import 'package:booking_villa/logic/ui/pages/customer/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -78,7 +79,6 @@ class _CustomerHomeState extends State<CustomerHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-             
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
                   child: BlocBuilder<ProfileBloc, ProfileState>(
@@ -98,7 +98,6 @@ class _CustomerHomeState extends State<CustomerHome> {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                       
                           Flexible(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,39 +126,76 @@ class _CustomerHomeState extends State<CustomerHome> {
 
                           const SizedBox(width: 8),
 
-                          // Logout + Avatar
+                         
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  context.read<AuthBloc>().add(
-                                    LogoutRequested(),
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const CartPage(),
+                                    ),
                                   );
                                 },
                                 icon: const Icon(
-                                  Icons.logout,
+                                  Icons.shopping_cart_outlined,
                                   color: AppColors.navy,
                                 ),
-                                tooltip: "Logout",
+                                tooltip: "Keranjang",
                               ),
-                              CircleAvatar(
-                                radius: 22,
-                                backgroundColor: AppColors.navy,
-                                backgroundImage: avatarUrl != null
-                                    ? NetworkImage(avatarUrl)
-                                    : null,
-                                child: avatarUrl == null
-                                    ? Text(
-                                        displayName.isNotEmpty
-                                            ? displayName[0].toUpperCase()
-                                            : 'T',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
+                              const SizedBox(width: 4),
+                              PopupMenuButton<String>(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                onSelected: (value) {
+                                  if (value == 'logout') {
+                                    context.read<AuthBloc>().add(
+                                      LogoutRequested(),
+                                    );
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) => [
+                                  const PopupMenuItem<String>(
+                                    value: 'logout',
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.logout,
+                                          color: Colors.redAccent,
+                                          size: 20,
                                         ),
-                                      )
-                                    : null,
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Logout',
+                                          style: TextStyle(
+                                            color: Colors.redAccent,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                child: CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: AppColors.navy,
+                                  backgroundImage: avatarUrl != null
+                                      ? NetworkImage(avatarUrl)
+                                      : null,
+                                  child: avatarUrl == null
+                                      ? Text(
+                                          displayName.isNotEmpty
+                                              ? displayName[0].toUpperCase()
+                                              : 'T',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      : null,
+                                ),
                               ),
                             ],
                           ),
@@ -169,7 +205,6 @@ class _CustomerHomeState extends State<CustomerHome> {
                   ),
                 ),
 
-  
                 CustomSearchBar(
                   hintText: "Search your dream villa...",
                   onChanged: (query) {
@@ -266,7 +301,6 @@ class _CustomerHomeState extends State<CustomerHome> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                
                           if (!state.isFilteredByDate)
                             Container(
                               margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
